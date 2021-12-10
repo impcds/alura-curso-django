@@ -1,7 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib import auth, messages
+from receita.models import Receita
 # Create your views here.
 def login(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        senha = request.POST['senha']
+        if campo_vazio(senha) or campo_vazio(email):
+            messages.error(request, 'Os campos email e senha devem estar preenchidos.')
+            return redirect('login')
+        if User.objects.filter(email=email).exists():
+            nome = User.objects.filter(email=email).values_list('username', flat=True).get()
+            user = auth.authenticate(request, username=nome, password=senha)
+            if user is not None:
+                auth.login(request, user)
+                messages.success(request, f'Bem vindo, {user.username}!')
+                return redirect('dashboard')
     return render(request, 'usuarios/login.html')
 
 def cadastro(request):
@@ -10,27 +25,66 @@ def cadastro(request):
         email = request.POST['email']
         senha = request.POST['password']
         senha2 = request.POST['password2']
-        if not nome.strip():
-            print('O campo nome não pode estar vazio.')
+        if campo_vazio(nome):
+            messages.error(request, 'O campo nome não pode estar vazio.')
             return redirect('cadastro')
-        if not email.strip():
-            print('O campo email não pode estar vazio.')
+        if campo_vazio(email):
+            messages.error(request, 'O campo email não pode estar vazio.')
             return redirect('cadastro')
-        if senha != senha2:
-            print('As senhas devem ser iguais.')
+        if senhas_diferentes(senha, senha2):
+            messages.error(request, 'As senhas não são iguais.')
             return redirect('cadastro')
         if User.objects.filter(email=email).exists():
-            print('Email já cadastrado.')
+            messages.error(request, 'Email já cadastrado.')
+            return redirect('cadastro')
+        if User.objects.filter(username=nome).exists():
+            messages.error(request, 'Usuário já cadastrado.')
             return redirect('cadastro')
         user = User.objects.create_user(username=nome, email=email, password=senha)
         user.save()
+        messages.success(request, 'Usuário cadastrado com sucesso. Efetue seu login.')
         print('Usuário cadastrado com sucesso!')
         return redirect('login')
     else:
         return render(request, 'usuarios/cadastro.html')
 
 def dashboard(request):
-    pass
+    if request.user.is_authenticated:
+        id = request.user.id
+        print(id)
+        receitas = Receita.objects.order_by('-date_receita').filter(pessoa=id)
+
+        dados = {
+            'receitas' : receitas
+        }
+        return render(request, 'usuarios/dashboard.html', dados)
+    else:
+        return redirect('index')
 
 def logout(request):
-    pass
+    auth.logout(request)
+    return redirect('index')
+
+def criar_receita(request):
+    if request.method == 'POST':
+        nome_receita = request.POST['nome_receita']
+        ingredientes = request.POST['ingredientes']
+        modo_preparo = request.POST['modo_preparo']
+        tempo_preparo = request.POST['tempo_preparo']
+        rendimento = request.POST['rendimento']
+        categoria = request.POST['categoria']
+        foto_receita = request.FILES['foto_receita']
+        user = get_object_or_404(User, pk=request.user.id)
+        slug = nome_receita.strip().replace(' ', '-').lower()
+        receita = Receita.objects.create(pessoa=user, nome_receita=nome_receita, slug=slug, ingredientes=ingredientes,
+        modo_preparo=modo_preparo, tempo_preparo=tempo_preparo, rendimento=rendimento,
+        categoria=categoria, foto_receita=foto_receita)
+        return redirect('dashboard')
+    else:
+        return render(request, 'usuarios/cria_receita.html')
+
+def campo_vazio(campo):
+    return not campo.strip()
+
+def senhas_diferentes(senha, senha2):
+    return senha != senha2
