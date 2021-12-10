@@ -4,8 +4,7 @@ from .models import Receita
 
 
 class ListandoReceitas(admin.ModelAdmin):
-    list_display = ('nome_receita', 'slug', 'categoria', 'pessoa', 'publicada',)
-    prepopulated_fields = {"slug": ("nome_receita", )}
+    list_display = ('nome_receita', 'categoria', 'pessoa', 'publicada',)
     list_editable = ('publicada',)
     list_display_links = ('nome_receita',)
     search_fields = ('nome_receita', 'ingredientes',)

@@ -7,8 +7,8 @@ def index(request):
     dados = {'receitas': receitas}
     return render(request, 'index.html', dados)
 
-def receita(request, slug):
-    receita = get_object_or_404(Receita, pk=slug)
+def receita(request, receita_id):
+    receita = get_object_or_404(Receita, pk=receita_id)
     receita_a_exibir = {
         'receita': receita
     }

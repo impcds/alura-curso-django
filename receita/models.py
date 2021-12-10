@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Receita(models.Model):
+#    id = models.BigIntegerField(primary_key=True)
     pessoa = models.ForeignKey(User, on_delete=models.CASCADE)
     nome_receita = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=255, unique=True, primary_key=True)
     ingredientes = models.TextField()
     modo_preparo = models.TextField()
     tempo_preparo = models.IntegerField()

@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from receita.models import Receita
+from django.db import models
+
+
 # Create your views here.
 def login(request):
     if request.method == 'POST':
@@ -75,8 +78,7 @@ def criar_receita(request):
         categoria = request.POST['categoria']
         foto_receita = request.FILES['foto_receita']
         user = get_object_or_404(User, pk=request.user.id)
-        slug = nome_receita.strip().replace(' ', '-').lower()
-        receita = Receita.objects.create(pessoa=user, nome_receita=nome_receita, slug=slug, ingredientes=ingredientes,
+        receita = Receita.objects.create(pessoa=user, nome_receita=nome_receita, ingredientes=ingredientes,
         modo_preparo=modo_preparo, tempo_preparo=tempo_preparo, rendimento=rendimento,
         categoria=categoria, foto_receita=foto_receita)
         return redirect('dashboard')

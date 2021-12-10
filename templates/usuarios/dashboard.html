@@ -39,7 +39,7 @@
                         <img src="{{ receita.foto_receita.url }}" alt="">
                       {% endif %}
                         <div class="receipe-content">
-                            <a href="{% url 'receita' receita.slug %}">
+                            <a href="{% url 'receita' receita.id %}">
                                 <h5>{{ receita.nome_receita }}</h5>
                             </a>
                         </div>
