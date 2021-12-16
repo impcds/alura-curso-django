@@ -68,7 +68,7 @@
                     <div class="col-12 col-lg-8">
                         <!-- Single Preparation Step -->
                         <div class="single-preparation-step d-flex">
-                            <p>{{ receita.modo_preparo }}</p>
+                            <p>{{ receita.modo_preparo|linebreaks }}</p>
                         </div>
                     </div>
 
@@ -77,7 +77,7 @@
                         <div class="ingredients">
                             <h4>Ingredientes</h4>
                             <div class="ingredients">
-                                <p>{{ receita.ingredientes }}</p>
+                                <p>{{ receita.ingredientes|linebreaks }}</p>
                             </div>
                         </div>
                     </div>

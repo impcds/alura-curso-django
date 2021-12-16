@@ -4,7 +4,7 @@ from .models import Receita
 
 
 class ListandoReceitas(admin.ModelAdmin):
-    list_display = ('nome_receita', 'categoria', 'pessoa', 'publicada',)
+    list_display = ('id', 'nome_receita', 'categoria', 'pessoa', 'publicada',)
     list_editable = ('publicada',)
     list_display_links = ('nome_receita',)
     search_fields = ('nome_receita', 'ingredientes',)
